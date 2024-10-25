@@ -41,6 +41,17 @@ import {
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
 
+const links = [
+  { name: "Diary", href: "/", icon: NotebookPen },
+  {
+    name: "Timer",
+    href: "/timer",
+    icon: Timer,
+  },
+  { name: "Program", href: "/program", icon: Workflow },
+  { name: "Analytics", href: "/analytics", icon: LineChart },
+];
+
 export default function Navbar() {
   const pathname = usePathname();
 
@@ -67,50 +78,23 @@ export default function Navbar() {
               <span className="sr-only">Training Assistant</span>
               <SheetClose className="absolute inset-0 h-full w-full"></SheetClose>
             </Link>
-            <Link
-              href="/"
-              className={cn(
-                "relative mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground",
-                pathname === "/" ? "bg-muted text-foreground" : "",
-              )}
-            >
-              <NotebookPen className="h-5 w-5" />
-              Diary
-              <SheetClose className="absolute inset-0 h-full w-full"></SheetClose>
-            </Link>
-            <Link
-              href="/timer"
-              className={cn(
-                "relative mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground",
-                pathname === "/timer" ? "bg-muted text-foreground" : "",
-              )}
-            >
-              <Timer className="h-5 w-5" />
-              Timer
-              <SheetClose className="absolute inset-0 h-full w-full"></SheetClose>
-            </Link>
-            <Link
-              href="/program"
-              className={cn(
-                "relative mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground",
-                pathname === "/program" ? "bg-muted text-foreground" : "",
-              )}
-            >
-              <Workflow className="h-5 w-5" />
-              Program
-              <SheetClose className="absolute inset-0 h-full w-full"></SheetClose>
-            </Link>
-            <Link
-              href="/analytics"
-              className={cn(
-                "relative mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground",
-                pathname === "/analytics" ? "bg-muted text-foreground" : "",
-              )}
-            >
-              <LineChart className="h-5 w-5" />
-              Analytics
-              <SheetClose className="absolute inset-0 h-full w-full"></SheetClose>
-            </Link>
+            {links.map((link) => {
+              const LinkIcon = link.icon;
+              return (
+                <Link
+                  key={link.name}
+                  href={link.href}
+                  className={cn(
+                    "relative mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground",
+                    pathname === `${link.href}` ? "bg-muted text-primary" : "",
+                  )}
+                >
+                  <LinkIcon className="h-5 w-5" />
+                  {link.name}
+                  <SheetClose className="absolute inset-0 h-full w-full"></SheetClose>
+                </Link>
+              );
+            })}
           </nav>
           <div className="mt-auto">
             <Card>

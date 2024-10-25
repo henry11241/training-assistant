@@ -20,6 +20,17 @@ import {
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 
+const links = [
+  { name: "Diary", href: "/", icon: NotebookPen },
+  {
+    name: "Timer",
+    href: "/timer",
+    icon: Timer,
+  },
+  { name: "Program", href: "/program", icon: Workflow },
+  { name: "Analytics", href: "/analytics", icon: LineChart },
+];
+
 export default function SideBar() {
   const pathname = usePathname();
 
@@ -35,46 +46,22 @@ export default function SideBar() {
         </div>
         <div className="flex-1">
           <nav className="grid items-start px-2 text-sm font-medium lg:px-4">
-            <Link
-              href="/"
-              className={cn(
-                "flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary",
-                pathname === "/" ? "bg-muted text-primary" : "",
-              )}
-            >
-              <NotebookPen className="h-4 w-4" />
-              Diary
-            </Link>
-            <Link
-              href="/timer"
-              className={cn(
-                "flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary",
-                pathname === "/timer" ? "bg-muted text-primary" : "",
-              )}
-            >
-              <Timer className="h-4 w-4" />
-              Timer
-            </Link>
-            <Link
-              href="/program"
-              className={cn(
-                "flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary",
-                pathname === "/program" ? "bg-muted text-primary" : "",
-              )}
-            >
-              <Workflow className="h-4 w-4" />
-              Program
-            </Link>
-            <Link
-              href="/analytics"
-              className={cn(
-                "flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary",
-                pathname === "/analytics" ? "bg-muted text-primary" : "",
-              )}
-            >
-              <LineChart className="h-4 w-4" />
-              Analytics
-            </Link>
+            {links.map((link) => {
+              const LinkIcon = link.icon;
+              return (
+                <Link
+                  key={link.name}
+                  href={link.href}
+                  className={cn(
+                    "flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary",
+                    pathname === `${link.href}` ? "bg-muted text-primary" : "",
+                  )}
+                >
+                  <LinkIcon className="h-4 w-4" />
+                  {link.name}
+                </Link>
+              );
+            })}
           </nav>
         </div>
         <div className="mt-auto p-4">
