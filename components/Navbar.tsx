@@ -120,12 +120,12 @@ export default function Navbar() {
                   Start a new session of training.
                 </CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="relative">
                 <Link href="/create">
-                  <Button size="sm" className="relative w-full">
+                  <Button size="sm" className="w-full">
                     <Plus className="h-5 w-5" />
-                    <SheetClose className="absolute inset-0 h-full w-full"></SheetClose>
                   </Button>
+                  <SheetClose className="absolute inset-x-6 inset-y-3 -translate-y-3"></SheetClose>
                 </Link>
               </CardContent>
             </Card>

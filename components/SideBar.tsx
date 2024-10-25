@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import {
   LineChart,
@@ -7,21 +7,21 @@ import {
   Timer,
   Weight,
   Workflow,
-} from 'lucide-react'
-import Link from 'next/link'
-import { Button } from './ui/button'
+} from "lucide-react";
+import Link from "next/link";
+import { Button } from "./ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from './ui/card'
-import { usePathname } from 'next/navigation'
-import { cn } from '@/lib/utils'
+} from "./ui/card";
+import { usePathname } from "next/navigation";
+import { cn } from "@/lib/utils";
 
 export default function SideBar() {
-  const pathname = usePathname()
+  const pathname = usePathname();
 
   return (
     <div className="hidden border-r bg-muted/40 md:block">
@@ -38,8 +38,8 @@ export default function SideBar() {
             <Link
               href="/"
               className={cn(
-                'flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary',
-                pathname === '/' ? 'bg-muted text-primary' : ''
+                "flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary",
+                pathname === "/" ? "bg-muted text-primary" : "",
               )}
             >
               <NotebookPen className="h-4 w-4" />
@@ -48,8 +48,8 @@ export default function SideBar() {
             <Link
               href="/timer"
               className={cn(
-                'flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary',
-                pathname === '/timer' ? 'bg-muted text-primary' : ''
+                "flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary",
+                pathname === "/timer" ? "bg-muted text-primary" : "",
               )}
             >
               <Timer className="h-4 w-4" />
@@ -58,8 +58,8 @@ export default function SideBar() {
             <Link
               href="/program"
               className={cn(
-                'flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary',
-                pathname === '/program' ? 'bg-muted text-primary' : ''
+                "flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary",
+                pathname === "/program" ? "bg-muted text-primary" : "",
               )}
             >
               <Workflow className="h-4 w-4" />
@@ -68,8 +68,8 @@ export default function SideBar() {
             <Link
               href="/analytics"
               className={cn(
-                'flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary',
-                pathname === '/analytics' ? 'bg-muted text-primary' : ''
+                "flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary",
+                pathname === "/analytics" ? "bg-muted text-primary" : "",
               )}
             >
               <LineChart className="h-4 w-4" />
@@ -86,13 +86,15 @@ export default function SideBar() {
               </CardDescription>
             </CardHeader>
             <CardContent className="p-2 pt-0 md:p-4 md:pt-0">
-              <Button size="sm" className="w-full">
-                <Plus className="h-4 w-4" />
-              </Button>
+              <Link href="/create">
+                <Button size="sm" className="w-full">
+                  <Plus className="h-4 w-4" />
+                </Button>
+              </Link>
             </CardContent>
           </Card>
         </div>
       </div>
     </div>
-  )
+  );
 }
