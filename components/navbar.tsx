@@ -105,7 +105,7 @@ export default function Navbar() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="relative">
-                <Link href="/training-assistant/create/training">
+                <Link href="/training-assistant/create">
                   <Button size="sm" className="w-full">
                     <Plus className="h-5 w-5" />
                   </Button>

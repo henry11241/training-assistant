@@ -102,9 +102,9 @@ export default function CreateTrainingForm() {
   }
 
   return (
-    <div className="flex flex-col items-center gap-1 text-start">
+    <div className="flex w-full flex-col items-center justify-center gap-1 text-start">
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="m-4 space-y-8">
           <FormField
             control={form.control}
             name="date"

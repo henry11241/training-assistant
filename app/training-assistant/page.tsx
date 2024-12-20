@@ -12,7 +12,7 @@ export default function Page() {
           <p className="text-sm text-muted-foreground">
             Start from adding a new training session.
           </p>
-          <Link href="/training-assistant/create/training">
+          <Link href="/training-assistant/create">
             <Button className="mt-4">Add Training</Button>
           </Link>
         </div>

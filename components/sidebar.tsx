@@ -73,7 +73,7 @@ export default function SideBar() {
               </CardDescription>
             </CardHeader>
             <CardContent className="p-2 pt-0 md:p-4 md:pt-0">
-              <Link href="/training-assistant/create/training">
+              <Link href="/training-assistant/create">
                 <Button size="sm" className="w-full">
                   <Plus className="h-4 w-4" />
                 </Button>

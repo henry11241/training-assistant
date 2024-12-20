@@ -17,18 +17,12 @@ import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
 
 const formSchema = z.object({
-  name: z.string().min(1, { message: "Excercise name is required." }),
-  reps: z.number().min(1, { message: "Reps must be at least 1." }),
-  sets: z.number().min(1, { message: "Sets must be at least 1." }),
-  minutes: z.number().nonnegative({ message: "Minutes cannot be negative." }),
-  seconds: z
-    .number()
-    .int()
-    .min(0)
-    .max(59, { message: "Seconds must be between 0 and 59." }),
+  name: z.string().min(1, { message: "Program name is required." }),
+  totalTime: z.number().nonnegative({ message: "Minutes cannot be negative." }),
+  
 });
 
-export default function CreateProgramForm() {
+export default function EditProgramForm() {
   const form = useForm({
     resolver: zodResolver(formSchema),
   });

@@ -2,7 +2,7 @@
 
 import { Program } from "@prisma/client";
 import { ColumnDef } from "@tanstack/react-table";
-import { SquarePen } from "lucide-react";
+import { Plus, SquarePen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
@@ -11,7 +11,7 @@ import Link from "next/link";
 export const columns: ColumnDef<Program>[] = [
   {
     accessorKey: "name",
-    header: () => <div className="text-left">Amount</div>,
+    header: () => <div className="text-left">Title</div>,
     cell: ({ row }) => {
       const title = row.original.name;
       return <div className="text-left font-medium">{title}</div>;
@@ -30,7 +30,7 @@ export const columns: ColumnDef<Program>[] = [
     cell: ({ row }) => {
       const programId = row.original.id;
       return (
-        <Link href={`/training-assistant/programs/${programId}`} passHref>
+        <Link href={`/training-assistant/programs/${programId}/edit`} passHref>
           <Button variant="ghost" className="h-8 w-8 p-0">
             <span className="sr-only">Edit program</span>
             <SquarePen />
