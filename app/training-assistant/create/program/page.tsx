@@ -1,6 +1,5 @@
 import { Metadata } from "next";
-import DefaultContentLayout from "@/components/default-content-layout";
-import CreateProgramForm from "@/components/create/program/create-program-form";
+import CreateProgramForm from "./create-program-form";
 
 export const metadata: Metadata = {
   title: "Program",
@@ -8,8 +7,6 @@ export const metadata: Metadata = {
 
 export default function Page() {
   return (
-    <DefaultContentLayout title="Create Program">
       <CreateProgramForm />
-    </DefaultContentLayout>
   );
 }

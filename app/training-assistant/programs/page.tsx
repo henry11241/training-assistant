@@ -1,24 +1,23 @@
 import { Metadata } from "next";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import DefaultContentLayout from "@/components/default-content-layout";
+import { Suspense } from "react";
+import { fetchPrograms } from "@/lib/data";
+import { columns } from "./columns";
+import { DataTable } from "./data-table";
 
 export const metadata: Metadata = {
   title: "Programs",
 };
 
-export default function Page() {
+export default async function Page() {
+  const data = await fetchPrograms()
+
   return (
-    <DefaultContentLayout title="My Training Programs">
-      <h3 className="text-2xl font-bold tracking-tight">
-        You have no training program
-      </h3>
-      <p className="text-sm text-muted-foreground">
-        Start from adding a new training program.
-      </p>
-      <Link href="/training-assistant/create/program">
-        <Button className="mt-4">Add Program</Button>
-      </Link>
-    </DefaultContentLayout>
+    <>
+      <main className="flex flex-1">
+        <Suspense fallback={<></>}>
+          <DataTable columns={columns} data={data} />
+        </Suspense>
+      </main>
+    </>
   );
 }

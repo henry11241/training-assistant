@@ -1,0 +1,68 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String         @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  email         String         @unique @db.VarChar(254)
+  name          String         @db.VarChar(100)
+  password      String         @db.VarChar(60)
+  createdAt     DateTime?      @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt     DateTime?      @default(now()) @map("updated_at") @db.Timestamp(6)
+  exerciseNames ExerciseName[]
+  programs      Program[]
+  training      Training[]
+
+  @@map("users")
+}
+
+model Training {
+  id        String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  name      String    @db.VarChar(100)
+  createdAt DateTime? @default(now()) @map("created_at") @db.Timestamp(6)
+  userId    String    @map("user_id") @db.Uuid
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  programId String    @map("program_id") @db.Uuid
+  program   Program   @relation(fields: [programId], references: [id], onDelete: Cascade)
+
+  @@map("training")
+}
+
+model Program {
+  id        String     @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  name      String     @db.VarChar(100)
+  userId    String     @map("user_id") @db.Uuid
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  exercises Exercise[]
+  training  Training[]
+  totalTime Int        @default(0)
+
+  @@map("programs")
+}
+
+model Exercise {
+  id                  String  @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  title               String  @db.VarChar(100)
+  reps                Int
+  sets                Int
+  restTimePerSetInSec Int     @map("rest_time_per_set_in_sec")
+  restTimeBtwExInSec  Int?    @map("rest_time_btw_ex_in_sec")
+  programId           String  @map("program_id") @db.Uuid
+  program             Program @relation(fields: [programId], references: [id], onDelete: Cascade)
+
+  @@map("exercises")
+}
+
+model ExerciseName {
+  id     String @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  name   String @db.VarChar(100)
+  userId String @map("user_id") @db.Uuid
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("exercise_name")
+}
