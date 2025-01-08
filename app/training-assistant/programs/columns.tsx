@@ -2,13 +2,11 @@
 
 import { Program } from "@prisma/client";
 import { ColumnDef } from "@tanstack/react-table";
-import { Delete, SquarePen } from "lucide-react";
+import { SquarePen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { deleteProgram } from "@/lib/actions";
+import DeleteProgramButton from "./delete-program-button";
 
-// This type is used to define the shape of our data.
-// You can use a Zod schema here if you want.
 export const columns: ColumnDef<Program>[] = [
   {
     accessorKey: "name",
@@ -42,16 +40,7 @@ export const columns: ColumnDef<Program>[] = [
               <SquarePen />
             </Button>
           </Link>
-          <Button
-            variant="ghost"
-            className="ml-1 h-8 w-8 p-0"
-            onClick={async () => {
-              await deleteProgram(programId);
-            }}
-          >
-            <span className="sr-only">Edit program</span>
-            <Delete />
-          </Button>
+          <DeleteProgramButton programId={programId} />
         </div>
       );
     },

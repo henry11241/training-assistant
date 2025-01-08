@@ -12,6 +12,9 @@ export default async function Page({ params }: { params: { id: string } }) {
     <div>
       <h1>{program.name}</h1>
       <p>Total Time: {program.totalTime} minutes</p>
+      <p>Exercises 1: {program.exercises[0].title}</p>
+      <p>Exercises 1: {program.exercises[0].id}</p>
+      <p>Exercises 1: {program.exercises[0].programId}</p>
     </div>
   );
 }

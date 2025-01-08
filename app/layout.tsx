@@ -4,6 +4,7 @@ import "./globals.css";
 
 import SideBar from "@/components/sidebar";
 import Navbar from "@/components/navbar";
+import { Toaster } from "@/components/ui/toaster";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -37,6 +38,7 @@ export default function RootLayout({
           <div className="flex flex-col">
             <Navbar />
             {children}
+            <Toaster />
           </div>
         </div>
       </body>

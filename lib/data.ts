@@ -13,19 +13,29 @@ export async function fetchPrograms() {
   }
 }
 
-export async function fetchProgram(programId: Program['id']) {
+export async function fetchProgram(programId: Program["id"]) {
   try {
     const programWithExercises = await prisma.program.findUnique({
       where: {
-        id: programId, 
+        id: programId,
       },
       include: {
-        exercises: true, 
+        exercises: true,
       },
     });
-    return programWithExercises
+    return programWithExercises;
   } catch (error) {
     console.error("Error fetching program:", error);
     throw new Error("Failed to fetch program");
+  }
+}
+
+export async function fetchExerciseName() {
+  try {
+    const exerciseName = await prisma.exerciseName.findMany();
+    return exerciseName;
+  } catch (error) {
+    console.error("Error fetching exercise name:", error);
+    throw new Error("Failed to fetch exercise name");
   }
 }
