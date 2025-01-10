@@ -32,7 +32,7 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { createProgram } from "@/lib/actions";
 import { ExerciseName } from "@prisma/client";
-import { Pencil } from "lucide-react";
+import { Pencil, X } from "lucide-react";
 import { useState } from "react";
 import { Label } from "@/components/ui/label";
 
@@ -116,15 +116,22 @@ export default function CreateProgramForm({ exerciseName }: Props) {
         {
           id: uuidv4(),
           title: "",
-          reps: "",
-          sets: "",
-          restTimePerSetInSec: "",
+          reps: 0,
+          sets: 0,
+          restTimePerSetInSec: 0,
           restTimeBtwExInSec: null,
           programId: programId,
         },
       ],
     },
   });
+
+  const {
+    register,
+    formState: { errors },
+    handleSubmit,
+    control,
+  } = form;
 
   const onSubmit = async (data: FormData) => {
     try {
@@ -144,20 +151,21 @@ export default function CreateProgramForm({ exerciseName }: Props) {
   };
 
   const { fields, append, remove } = useFieldArray({
-    control: form.control,
     name: "exercises",
+    control,
+    rules: { required: "You must select at least one exercise." },
   });
 
   return (
     <div className="m-4 w-3/4 rounded-md border">
       <Form {...form}>
         <form
-          onSubmit={form.handleSubmit(onSubmit)}
+          onSubmit={handleSubmit(onSubmit)}
           className="m-4 flex flex-col space-y-8"
         >
           {/* Program Name */}
           <FormField
-            control={form.control}
+            control={control}
             name="name"
             render={({ field }) => (
               <FormItem>
@@ -175,7 +183,7 @@ export default function CreateProgramForm({ exerciseName }: Props) {
 
           {/* Exercise */}
           <FormField
-            control={form.control}
+            control={control}
             name="exercises"
             render={({ field }) => (
               <>
@@ -185,7 +193,20 @@ export default function CreateProgramForm({ exerciseName }: Props) {
                     key={item.id}
                   >
                     <FormItem>
-                      <FormLabel>Exercise {index + 1}</FormLabel>
+                      <div className="flex justify-between relative">
+                        <FormLabel>
+                          <span>Exercise {index + 1}</span>
+                        </FormLabel>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="relative -top-2"
+                          onClick={() => remove(index)}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
                       <Select
                         value={selectedOptions[index]}
                         onValueChange={(value) =>
@@ -232,8 +253,7 @@ export default function CreateProgramForm({ exerciseName }: Props) {
                           <Input
                             type="number"
                             placeholder="Reps"
-                            defaultValue=""
-                            {...form.register(`exercises.${index}.reps`)} // using field for reps
+                            {...register(`exercises.${index}.reps`)} // using field for reps
                           />
                         </FormControl>
                         <FormMessage />
@@ -246,27 +266,27 @@ export default function CreateProgramForm({ exerciseName }: Props) {
                           <Input
                             type="number"
                             placeholder="Sets"
-                            {...form.register(`exercises.${index}.sets`)} // using field for sets
+                            {...register(`exercises.${index}.sets`)} // using field for sets
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+
+                      {/* Rest Time per Set (in seconds) */}
+                      <FormItem>
+                        <FormLabel>Rest Time per Set (in seconds)</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            placeholder="Rest Time per Set"
+                            {...form.register(
+                              `exercises.${index}.restTimePerSetInSec`,
+                            )} // using field for restTimePerSetInSec
                           />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     </div>
-
-                    {/* Rest Time per Set (in seconds) */}
-                    <FormItem>
-                      <FormLabel>Rest Time per Set (in seconds)</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="number"
-                          placeholder="Rest Time per Set"
-                          {...form.register(
-                            `exercises.${index}.restTimePerSetInSec`,
-                          )} // using field for restTimePerSetInSec
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
 
                     {/* Rest Time Between Exercises (in seconds) */}
                     <FormItem>
@@ -277,9 +297,7 @@ export default function CreateProgramForm({ exerciseName }: Props) {
                         <Input
                           type="number"
                           placeholder="Rest Time Between Exercises"
-                          {...form.register(
-                            `exercises.${index}.restTimeBtwExInSec`,
-                          )} // using field for restTimeBtwExInSec
+                          {...register(`exercises.${index}.restTimeBtwExInSec`)} // using field for restTimeBtwExInSec
                         />
                       </FormControl>
                       <FormMessage />
@@ -294,9 +312,9 @@ export default function CreateProgramForm({ exerciseName }: Props) {
                     append({
                       id: uuidv4(),
                       title: "",
-                      reps: "",
-                      sets: "",
-                      restTimePerSetInSec: "",
+                      reps: 0,
+                      sets: 0,
+                      restTimePerSetInSec: 0,
                       restTimeBtwExInSec: null,
                       programId: programId,
                     })
@@ -336,7 +354,7 @@ export default function CreateProgramForm({ exerciseName }: Props) {
 
           {/* Total Time */}
           <FormField
-            control={form.control}
+            control={control}
             name="totalTime"
             render={({ field }) => {
               // Get the current value of totalTime (in seconds)
@@ -384,6 +402,8 @@ export default function CreateProgramForm({ exerciseName }: Props) {
               );
             }}
           />
+
+          <p className="text-red-500">{errors.exercises?.root?.message}</p>
           <Button type="submit">Submit</Button>
         </form>
       </Form>
