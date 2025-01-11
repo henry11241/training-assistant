@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use server";
 
 import { prisma } from "@/lib/prisma";
@@ -27,9 +28,9 @@ export async function createProgram(data: ExtendedProgram) {
         })),
       },
     },
-  });;
+  });
   revalidatePath("/training-assistant/programs");
-  redirect('/training-assistant/programs')
+  redirect("/training-assistant/programs");
 }
 
 async function updateProgramTotalTime(programId: string) {

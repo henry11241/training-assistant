@@ -116,7 +116,7 @@ export async function GET() {
     await prisma.program.deleteMany();
     await prisma.user.deleteMany();
     console.log("All data erased successfully.");
-    await prisma.$transaction(async (tx) => {
+    await prisma.$transaction(async () => {
         // Seed new data
         await seedUsers(); // Pass transaction client to seed functions
         await seedPrograms();

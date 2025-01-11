@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import { SubmitHandler, useFieldArray, useForm } from "react-hook-form";
@@ -97,7 +98,6 @@ export default function CreateProgramForm({ exerciseName }: Props) {
   });
 
   const {
-    register,
     formState: { errors },
     handleSubmit,
     control,
@@ -128,18 +128,6 @@ export default function CreateProgramForm({ exerciseName }: Props) {
     }
   };
 
-  const handleSelectChange = (value: string, index: number) => {
-    if (value === "add-option") {
-      setIsDialogOpen(true);
-    } else {
-      setSelectedOptions((prev) => {
-        const updated = [...prev];
-        updated[index] = value;
-        return updated;
-      });
-    }
-  };
-
   const onSubmit: SubmitHandler<FormFields> = async (data) => {
     try {
       await createProgram(data);
@@ -154,6 +142,7 @@ export default function CreateProgramForm({ exerciseName }: Props) {
         description: "Something went wrong, try contacting the provider.",
         variant: "destructive",
       });
+      console.log(error);
     }
   };
 
