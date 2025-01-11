@@ -1,6 +1,6 @@
 "use client";
 
-import { useFieldArray, useForm } from "react-hook-form";
+import { SubmitHandler, useFieldArray, useForm } from "react-hook-form";
 import { v4 as uuidv4 } from "uuid";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -59,17 +59,55 @@ const formSchema = z.object({
     .min(1, { message: "You must select at least one exercise." }),
 });
 
-type FormData = z.infer<typeof formSchema>;
+type FormFields = z.infer<typeof formSchema>;
 type Props = {
   exerciseName: ExerciseName[];
 };
 
 export default function CreateProgramForm({ exerciseName }: Props) {
+  const { toast } = useToast();
+  const programId = uuidv4();
+
+  // States for managing exercise options
   const defaultOptions = exerciseName.map((item) => item.name);
   const [options, setOptions] = useState<string[]>(defaultOptions);
   const [newOption, setNewOption] = useState("");
   const [selectedOptions, setSelectedOptions] = useState([""]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  const form = useForm<FormFields>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      name: "",
+      id: programId,
+      userId: "123e4567-e89b-12d3-a456-426614174000", // Replace with actual user id
+      totalTime: 0,
+      exercises: [
+        {
+          id: uuidv4(),
+          title: "",
+          reps: 0,
+          sets: 0,
+          restTimePerSetInSec: 0,
+          restTimeBtwExInSec: null,
+          programId: programId,
+        },
+      ],
+    },
+  });
+
+  const {
+    register,
+    formState: { errors },
+    handleSubmit,
+    control,
+  } = form;
+
+  const { fields, append, remove } = useFieldArray({
+    name: "exercises",
+    control,
+    rules: { required: "You must select at least one exercise." },
+  });
 
   const handleAddOption = () => {
     if (newOption && !options.includes(newOption)) {
@@ -102,38 +140,7 @@ export default function CreateProgramForm({ exerciseName }: Props) {
     }
   };
 
-  const { toast } = useToast();
-  const programId = uuidv4();
-
-  const form = useForm({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: "",
-      id: programId,
-      userId: "123e4567-e89b-12d3-a456-426614174000",
-      totalTime: 0,
-      exercises: [
-        {
-          id: uuidv4(),
-          title: "",
-          reps: 0,
-          sets: 0,
-          restTimePerSetInSec: 0,
-          restTimeBtwExInSec: null,
-          programId: programId,
-        },
-      ],
-    },
-  });
-
-  const {
-    register,
-    formState: { errors },
-    handleSubmit,
-    control,
-  } = form;
-
-  const onSubmit = async (data: FormData) => {
+  const onSubmit: SubmitHandler<FormFields> = async (data) => {
     try {
       await createProgram(data);
       toast({
@@ -149,12 +156,6 @@ export default function CreateProgramForm({ exerciseName }: Props) {
       });
     }
   };
-
-  const { fields, append, remove } = useFieldArray({
-    name: "exercises",
-    control,
-    rules: { required: "You must select at least one exercise." },
-  });
 
   return (
     <div className="m-4 w-3/4 rounded-md border">
@@ -182,150 +183,197 @@ export default function CreateProgramForm({ exerciseName }: Props) {
           />
 
           {/* Exercise */}
-          <FormField
-            control={control}
-            name="exercises"
-            render={({ field }) => (
-              <>
-                {fields.map((item, index) => (
-                  <div
-                    className="rounded-md border p-4 shadow-md"
-                    key={item.id}
+
+          {fields.map((item, index) => (
+            <div className="rounded-md border p-4 shadow-md" key={item.id}>
+              <FormItem>
+                <FormLabel className="flex justify-between">
+                  <span>Exercise {index + 1}</span>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => remove(index)}
                   >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </FormLabel>
+
+                <FormField
+                  control={control}
+                  name={`exercises.${index}.title`}
+                  render={({ field }) => (
                     <FormItem>
-                      <div className="flex justify-between relative">
-                        <FormLabel>
-                          <span>Exercise {index + 1}</span>
-                        </FormLabel>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          className="relative -top-2"
-                          onClick={() => remove(index)}
+                      <FormLabel>Title</FormLabel>
+                      <FormControl>
+                        <Select
+                          value={field.value}
+                          onValueChange={(value) => {
+                            if (value === "add-option") {
+                              setIsDialogOpen(true);
+                            } else {
+                              field.onChange(value);
+                            }
+                          }}
                         >
-                          <X className="h-4 w-4" />
-                        </Button>
-                      </div>
-                      <Select
-                        value={selectedOptions[index]}
-                        onValueChange={(value) =>
-                          handleSelectChange(value, index)
-                        }
-                      >
-                        <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Select an option" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectGroup>
-                            {options.map((option) => (
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Select an option" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectGroup>
+                              {options.map((option) => (
+                                <SelectItem
+                                  key={option}
+                                  value={option}
+                                  className="group"
+                                >
+                                  {option}
+                                </SelectItem>
+                              ))}
                               <SelectItem
-                                key={option}
-                                value={option}
-                                className="group"
+                                value="add-option"
+                                className="text-blue-500"
                               >
-                                {option}
+                                <span className="flex items-center">
+                                  <Pencil className="mr-2 h-4 w-4" />
+                                  Edit My Exercises
+                                </span>
                               </SelectItem>
-                            ))}
-                            <SelectItem
-                              value="add-option"
-                              className="text-blue-500"
-                            >
-                              <span className="flex items-center">
-                                <Pencil className="mr-2 h-4 w-4" />
-                                Edit My Exercises
-                              </span>
-                            </SelectItem>
-                          </SelectGroup>
-                        </SelectContent>
-                      </Select>
-                      <FormDescription>
-                        Select from existing list or create a new exercise.
-                      </FormDescription>
+                            </SelectGroup>
+                          </SelectContent>
+                        </Select>
+                      </FormControl>
                       <FormMessage />
                     </FormItem>
+                  )}
+                />
 
-                    <div className="flex gap-2">
-                      {/* Reps Input */}
-                      <FormItem className="flex-1">
-                        <FormLabel>Reps</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            placeholder="Reps"
-                            {...register(`exercises.${index}.reps`)} // using field for reps
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
+                <FormField
+                  control={control}
+                  name={`exercises.${index}.reps`}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Reps</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          placeholder="Reps"
+                          {...field}
+                          value={field.value === null ? "" : field.value}
+                          onChange={(e) =>
+                            field.onChange(
+                              e.target.value === ""
+                                ? null
+                                : Number(e.target.value),
+                            )
+                          }
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-                      {/* Sets Input */}
-                      <FormItem className="flex-1">
-                        <FormLabel>Sets</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            placeholder="Sets"
-                            {...register(`exercises.${index}.sets`)} // using field for sets
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
+                <FormField
+                  control={control}
+                  name={`exercises.${index}.sets`}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Sets</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          placeholder="Sets"
+                          {...field}
+                          value={field.value === null ? "" : field.value}
+                          onChange={(e) =>
+                            field.onChange(
+                              e.target.value === ""
+                                ? null
+                                : Number(e.target.value),
+                            )
+                          }
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-                      {/* Rest Time per Set (in seconds) */}
-                      <FormItem>
-                        <FormLabel>Rest Time per Set (in seconds)</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            placeholder="Rest Time per Set"
-                            {...form.register(
-                              `exercises.${index}.restTimePerSetInSec`,
-                            )} // using field for restTimePerSetInSec
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    </div>
+                <FormField
+                  control={control}
+                  name={`exercises.${index}.restTimePerSetInSec`}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Rest Time Per Set (seconds)</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          placeholder="Rest Time Per Set"
+                          {...field}
+                          value={field.value === null ? "" : field.value}
+                          onChange={(e) =>
+                            field.onChange(
+                              e.target.value === ""
+                                ? null
+                                : Number(e.target.value),
+                            )
+                          }
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-                    {/* Rest Time Between Exercises (in seconds) */}
+                <FormField
+                  control={control}
+                  name={`exercises.${index}.restTimeBtwExInSec`}
+                  render={({ field }) => (
                     <FormItem>
                       <FormLabel>
-                        Rest Time Between Exercises (in seconds)
+                        Rest Time Between Exercises (seconds)
                       </FormLabel>
                       <FormControl>
                         <Input
                           type="number"
                           placeholder="Rest Time Between Exercises"
-                          {...register(`exercises.${index}.restTimeBtwExInSec`)} // using field for restTimeBtwExInSec
+                          value={field.value === null ? "" : field.value}
+                          onChange={(e) =>
+                            field.onChange(
+                              e.target.value === ""
+                                ? null
+                                : Number(e.target.value),
+                            )
+                          }
                         />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
-                  </div>
-                ))}
+                  )}
+                />
+              </FormItem>
+            </div>
+          ))}
 
-                <Button
-                  variant="outline"
-                  className="mt-4"
-                  onClick={() =>
-                    append({
-                      id: uuidv4(),
-                      title: "",
-                      reps: 0,
-                      sets: 0,
-                      restTimePerSetInSec: 0,
-                      restTimeBtwExInSec: null,
-                      programId: programId,
-                    })
-                  }
-                  type="button"
-                >
-                  Add Another Exercise
-                </Button>
-              </>
-            )}
-          />
+          <Button
+            variant="outline"
+            className="mt-4"
+            onClick={() =>
+              append({
+                id: uuidv4(),
+                title: "",
+                reps: 0,
+                sets: 0,
+                restTimePerSetInSec: 0,
+                restTimeBtwExInSec: null,
+                programId: programId,
+              })
+            }
+            type="button"
+          >
+            Add Another Exercise
+          </Button>
 
           {/* Add New Exercise Name Dialog */}
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
